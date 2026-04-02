@@ -1,0 +1,85 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Firm {
+  id                   String    @id @default(cuid())
+  name                 String
+  founded              String?
+  hq                   String?
+  estimatedAum         String?
+  investmentStage      String?
+  targetCompanySize    String?
+  healthcareSubsectors String?
+  website              String?
+  notableExits         String?
+  clearstartNotes      String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  companies            Company[]
+}
+
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  firmId      String
+  firm        Firm     @relation(fields: [firmId], references: [id], onDelete: Cascade)
+  website     String?
+  subsector   String?
+  stage       String?
+  description String?
+  logoUrl     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  audits      Audit[]
+
+  @@index([firmId])
+}
+
+model Audit {
+  id        String  @id @default(cuid())
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  overallScore Float?
+  tier         String? // RED, YELLOW, GREEN, BLUE
+
+  // Category scores (1-5)
+  teamSignals          Int?
+  teamSignalsNotes     String?
+  brandPositioning     Int?
+  brandPositioningNotes String?
+  websiteDigital       Int?
+  websiteDigitalNotes  String?
+  contentSocial        Int?
+  contentSocialNotes   String?
+  thoughtLeadership    Int?
+  thoughtLeadershipNotes String?
+  icpClarity           Int?
+  icpClarityNotes      String?
+  demandGen            Int?
+  demandGenNotes       String?
+  salesEnablement      Int?
+  salesEnablementNotes String?
+  competitiveDiff      Int?
+  competitiveDiffNotes String?
+
+  // Clearstart internal fields
+  urgencySignals       String[] // e.g. ["PRE_RAISE", "RECENT_RAISE", "NEW_PLATFORM"]
+  competitiveNotes     String?
+  suggestedServiceEntry String?
+  suggestedOutreach    String? // "FIRM_FIRST" or "DIRECT"
+  outreachAngle        String?
+
+  rawResearch Json? // Full research data blob
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+}

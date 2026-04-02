@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "src/app/api/audits/run/route.js": {
+      "maxDuration": 60
+    }
+  }
+}
